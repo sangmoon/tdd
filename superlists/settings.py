@@ -121,3 +121,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '../static'))
+
+if 'ENV_STATE' in os.environ and os.environ['ENV_STATE'] == 'production':
+    DEBUG = False
+    ALLOWED_HOSTS = ['www.sangmoonpark.com']
