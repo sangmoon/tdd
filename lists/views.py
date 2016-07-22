@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
-from lists.forms import ItemForm
+from lists.forms import ExistingListItemForm, ItemForm
 from lists.models import Item, List
 
 
@@ -10,18 +10,15 @@ def home_page(request):
 
 def view_list(request, list_id):
     list_ = List.objects.get(id=list_id)
-    error = None
-    form = ItemForm()
+    form = ExistingListItemForm(for_list=list_)
     if request.method == 'POST':
-        form = ItemForm(data=request.POST)
+        form = ExistingListItemForm(for_list=list_, data=request.POST)
         if form.is_valid():
-            form.save(for_list=list_)
+            form.save()
             return redirect(list_)
-        else:
-            error = "You can't have an empty list item"
     return render(
         request, 'list.html',
-        {'form': form, 'list': list_, 'error': error})
+        {'form': form, 'list': list_})
 
 
 def new_list(request):
@@ -31,5 +28,4 @@ def new_list(request):
         form.save(for_list=list_)
         return redirect(list_)
     else:
-        error = "You can't have an empty list item"
-        return render(request, 'home.html', {"form": form, "error": error})
+        return render(request, 'home.html', {"form": form})
